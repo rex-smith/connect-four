@@ -18,12 +18,12 @@ class Game
     @board = Array.new(@rows) {Array.new(@columns)}
   end
 
-  attr_reader :columns
+  attr_reader :columns, :rows
 
   def choose_player_type(player)
     puts "What type of player is #{player}?"
     player_type = gets.chomp.downcase
-    until gets.chomp.downcase == 'human' || gets.chomp.downcase == 'computer'
+    until player_type == 'human' || player_type == 'computer'
      choose_player_type
     end
     player_type
@@ -37,13 +37,11 @@ class Game
   def play_game
     until @game_over == true
       print_board
-      round += 1
-      @active_player.choose_column
+      @round += 1
+      player_move(@active_player)
       print_board
       check_if_won
       change_active
-      @active_player.choose_column
-      check_if_won
     end
   end
 
@@ -74,6 +72,7 @@ class Game
   end
 
   def four_diagonal?
+    # ISSUE WITH EACH HERE?
     for i in rows
       for j in columns
         if @board[i][j] == @board[i+1][j+1] && @board[i][j] == [i+2][j+2] && @board[i][j] == @board[i+3][j+3]
@@ -81,6 +80,7 @@ class Game
         end
       end
     end
+
     for i in rows
       for j in columns
         if @board[i][j] == @board[i-1][j-1] && @board[i][j] == [i-2][j-2] && @board[i][j] == @board[i-3][j-3]
@@ -88,7 +88,31 @@ class Game
         end
       end
     end
+
     false
+  end
+
+  def player_move(player)
+    column = player.move
+    until valid?(column)
+      column = player.move
+    end
+
+    @board.reverse_each do |row|
+      if row[column] == nil
+        row[column] == player.symbol
+        return
+      end
+    end
+    puts "Player move error"
+    return 
+  end
+
+  def valid?(move)
+    if @board[0][move] != nil
+      return false
+    end
+    return true
   end
 
   def winner?
@@ -103,11 +127,11 @@ class Game
   end
 
   def print_board
-    board.each do |row|
+    @board.each do |row|
       row.each do |column|
-        p column.nil? ? '[ ]' : "[#{column}]"
+        print column.nil? ? '[ ]' : "[#{column}]"
       end
-      print '/n'
+      print "\n"
     end
   end
 end
@@ -124,9 +148,7 @@ class Player
     @symbol = symbol
   end
 
-  def choose_column
-    # Where either player chooses a column (basically outputs which column or makes them redo)
-  end
+  attr_reader :symbol, :name
 end
 
 class Computer < Player
@@ -143,3 +165,8 @@ class Human < Player
     return move
   end
 end
+
+
+# Testing
+my_game = Game.new
+my_game.play_game
