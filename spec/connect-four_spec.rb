@@ -1,5 +1,7 @@
 #spec/connect-four_spec.rb
-require './lib/connect-four'
+require './lib/game'
+require './lib/player'
+require './lib/main'
 
 describe Game
 
