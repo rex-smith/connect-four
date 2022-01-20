@@ -22,7 +22,7 @@
   class Human < Player
     def move
       puts "Please pick a column for your piece, #{@name}"
-      move = gets.chomp.to_i
+      move = gets.chomp.to_i 
       return move
     end
   end

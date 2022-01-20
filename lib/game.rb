@@ -6,13 +6,16 @@
 # Keeps track of occupied spaces
 # Keeps track of which player's pieces are where
 
+require_relative 'player'
+
 class Game
   def initialize(rows=6, columns=7)
     @player1 = create_player('Player 1', 'X')
     @player2 = create_player('Player 2', 'O')
     @active_player = @player1
-    @rows = rows
-    @columns = columns
+    @board = Board.new(6,7)
+    @rows = @board.rows
+    @columns = @board.columns
     @game_over = false
     @round = 0
     @board = Array.new(@rows) {Array.new(@columns)}
@@ -94,7 +97,7 @@ class Game
 
   def player_move(player)
     column = player.move
-    until valid?(column)
+    until valid_move?(column)
       column = player.move
     end
 
@@ -108,19 +111,19 @@ class Game
     return 
   end
 
-  def valid?(move)
+  def valid_move?(move)
     if @board[0][move] != nil
       return false
     end
     return true
   end
 
-  def winner?
+  def game_over?
     four_diagonal? || four_horizontal? || four_vertical?
   end
 
   def check_if_won
-    if winner? == true
+    if game_over? == true
       @game_over = true
       puts "Good game. #{@active_player.name} won the game in #{round} rounds."
     end
